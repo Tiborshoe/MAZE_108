@@ -1,8 +1,16 @@
 import pygame
 import sys
 import random
+import os
 from collections import deque
 from button import Button
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 pygame.init()
 
@@ -15,9 +23,9 @@ YELLOW = (255, 255, 0)
 GRAY = (100, 100, 100)
 
 # Assests 
-BG = pygame.image.load("assets/Background.png")
+BG = pygame.image.load(resource_path("assets/Background.png"))
 def get_font(size):
-    return pygame.font.Font("assets/font.ttf", size)
+    return pygame.font.Font(resource_path("assets/font.ttf"), size)
 
 # Game Variables
 WIDTH, HEIGHT = 1280, 720
@@ -56,16 +64,16 @@ def generate_complex_maze():
 maze = generate_complex_maze()
 
 # Load textures
-wall_texture = pygame.image.load("assets/wall.png")
+wall_texture = pygame.image.load(resource_path("assets/wall.png"))
 wall_texture = pygame.transform.scale(wall_texture, (TILE_SIZE, TILE_SIZE))
 
-player_texture_right = pygame.image.load("assets/player_right.png")
+player_texture_right = pygame.image.load(resource_path("assets/player_right.png"))
 player_texture_right = pygame.transform.scale(player_texture_right, (TILE_SIZE, TILE_SIZE))
 
-player_texture_left = pygame.image.load("assets/player_left.png")
+player_texture_left = pygame.image.load(resource_path("assets/player_left.png"))
 player_texture_left = pygame.transform.scale(player_texture_left, (TILE_SIZE, TILE_SIZE))
 
-exit_texture = pygame.image.load("assets/exit.png")
+exit_texture = pygame.image.load(resource_path("assets/exit.png"))
 exit_texture = pygame.transform.scale(exit_texture, (TILE_SIZE, TILE_SIZE))
 
 # Variable to track player direction
@@ -290,9 +298,9 @@ def main_menu():
         MENU_TEXT = get_font(100).render("THE MAZE", True, "RED")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
-        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="Red")
-        HOW_TO_PLAY_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), text_input="HOW TO PLAY", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
-        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="Red")
+        PLAY_BUTTON = Button(image=pygame.image.load(resource_path("assets/Play Rect.png")), pos=(640, 250), text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="Red")
+        HOW_TO_PLAY_BUTTON = Button(image=pygame.image.load(resource_path("assets/Options Rect.png")), pos=(640, 400), text_input="HOW TO PLAY", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
+        QUIT_BUTTON = Button(image=pygame.image.load(resource_path("assets/Quit Rect.png")), pos=(640, 550), text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="Red")
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
