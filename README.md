@@ -21,6 +21,7 @@
    ```bash
    git clone https://github.com/Tiborshoe/MAZE_108.git
 2. Navigate to the directory and find the maze.exe and enjoy
+3. Anti-virus might try to prevent you from installing the file or even openning the .exe, I suggest temporarily disabling it just to play the game then enable the anti-virus back after.
 ### Dependencies:
 - Python (latest version)
 - pygame:
