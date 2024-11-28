@@ -21,6 +21,11 @@
    ```bash
    git clone https://github.com/Tiborshoe/MAZE_108.git
 2. Navigate to the directory and find the maze.exe and enjoy
+### Dependencies:
+- Python (latest version)
+- pygame:
+  ```bash
+  pip install pygame-ce
 
 ## **Credit**
 This project is made by the collaboration of:
