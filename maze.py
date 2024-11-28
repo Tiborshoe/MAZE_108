@@ -5,6 +5,7 @@ import os
 from collections import deque
 from button import Button
 
+# Ensure assets wont get lost 
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -12,6 +13,7 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+# call pygame
 pygame.init()
 
 # Game colors
@@ -43,9 +45,8 @@ vision_radius = 20
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("THE MAZE")
 
-
+# game audio call
 pygame.mixer.init()
-
 
 # Load background music
 pygame.mixer.music.load(resource_path("assets/bg_music.mp3"))
@@ -57,10 +58,7 @@ game_complete_sound = pygame.mixer.Sound(resource_path("assets/complete.mp3"))
 game_complete_sound.set_volume(0.7)  # Adjust the volume
 
 
-
-
-
-# Maze Generation
+# Random maze generation 
 def generate_complex_maze():
     maze = [[1 for _ in range(COLS)] for _ in range(ROWS)]
 
@@ -102,10 +100,10 @@ def draw_maze(ai_footprints, first_move):
         for col in range(COLS):
             x, y = MARGIN_X + col * TILE_SIZE, MARGIN_Y + row * TILE_SIZE
             
-            # Calculate the distance between the player and the current tile
+            # Calculate distance between player and current tile
             distance = ((player_pos[0] - row) ** 2 + (player_pos[1] - col) ** 2) ** 0.5
             
-            # Fog of War: Show fog for tiles outside the vision radius, only after the first move
+            # Show fog only after first move from player
             if first_move and distance > vision_radius:
                 pygame.draw.rect(SCREEN, GRAY, (x, y, TILE_SIZE, TILE_SIZE))
             else:
@@ -130,12 +128,15 @@ def draw_maze(ai_footprints, first_move):
     ex, ey = exit_pos[1], exit_pos[0]
     SCREEN.blit(exit_texture, (MARGIN_X + ex * TILE_SIZE, MARGIN_Y + ey * TILE_SIZE))
 
+# Graph Traversal Algorithm
 def bfs_solve(start, end):
+    # Initialize queue position, var for visited and tracing
     queue = deque([start])
     visited = set()
     visited.add(tuple(start))
     parent = {tuple(start): None}
 
+    
     while queue:
         current = queue.popleft()
         if current == end:
@@ -144,7 +145,7 @@ def bfs_solve(start, end):
                 path.append(current)
                 current = parent[tuple(current)]
             return path[::-1]
-        for dx, dy in directions:
+        for dx, dy in directions: #loop all possible movement direction
             next_row, next_col = current[0] + dx, current[1] + dy
             if 1 <= next_row < ROWS - 1 and 1 <= next_col < COLS - 1 and maze[next_row][next_col] == 0:
                 next_pos = [next_row, next_col]
@@ -193,26 +194,26 @@ def game_main():
     ai_mode = False
     solution_path = []
     ai_footprints = []
-    first_move = False  # Flag to track if the first move has been made
+    first_move = False  # track if first move has been made
 
     while True:
         SCREEN.fill(BLACK)
 
-        # Draw the maze with or without fog depending on the first move
+        # Draw maze w/o fog depending on first move
         draw_maze(ai_footprints, first_move)
 
         if ai_mode and solution_path:
             if player_pos != exit_pos:
-                ai_footprints.append(player_pos[:])
-                player_pos[:] = solution_path.pop(0)
+                ai_footprints.append(player_pos[:]) #record current player pos
+                player_pos[:] = solution_path.pop(0) #move to next pos in solution path
 
-        # Check if vision_radius reached 0, end the game
+        # Check vision_radius reached 0, end the game
         if vision_radius <= 0:
             game_over_text = get_font(75).render("Game Over!", True, RED)
             SCREEN.blit(game_over_text, game_over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
             pygame.display.flip()
-            pygame.time.delay(2000)  # Wait for 2 seconds
-            main_menu()  # Return to the main menu after game over
+            pygame.time.delay(2000)  # 2 seconds delay
+            main_menu()  # Return to main menu after game over
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -221,7 +222,7 @@ def game_main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pause_menu()  # Open pause menu
-                if event.key == pygame.K_m:
+                if event.key == pygame.K_m: #run ai mode 
                     ai_mode = not ai_mode
                     if ai_mode:
                         solution_path = bfs_solve(player_pos, exit_pos)
@@ -247,18 +248,18 @@ def game_main():
                         player_direction = "right"
                         moved = True
 
-                    # Update player position if the new position is valid
+                    # Update player position if new position is valid
                     if moved and maze[new_pos[0]][new_pos[1]] == 0:
                         player_pos = new_pos
-                        # Set first_move to True after the first movement
+                        # Set first_move to True after first movement
                         if not first_move:
                             first_move = True
-                            vision_radius = 20  # Reset vision radius when the first move happens
+                            vision_radius = 20  # Reset vision radius when first move 
 
-                    # Reduce vision radius if the player moves
-                    
+                    # Reduce vision radius if player moves
                         vision_radius = max(0, vision_radius - 0.1)  # Prevent radius from going below 0
-
+       
+        # player reaches goal
         if player_pos == exit_pos:
             pygame.mixer.music.pause()
             game_complete_sound.play()
@@ -270,7 +271,9 @@ def game_main():
             pygame.mixer.music.unpause() # Resume background music
             main_menu()  # Return to main menu after completing the level
 
+        # same as display.update but for entire screen per frame
         pygame.display.flip()
+        # fps set
         clock.tick(30)
 
 # Menu Functions
@@ -351,47 +354,57 @@ def credits():
 
 def main_menu():
     while True:
+        # place background img into screen
         SCREEN.blit(BG, (0, 0))
+        # get the mouse position
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
+        # set menu title var
         MENU_TEXT = get_font(100).render("THE MAZE", True, "RED")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
 
+        # Place all menu buttons
         PLAY_BUTTON = Button(image= None, pos=(640, 250), text_input="PLAY", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
         HOW_TO_PLAY_BUTTON = Button(image=None, pos=(640, 350), text_input="HOW TO PLAY", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
         CREDITS_BUTTON = Button(image=None, pos=(640, 450), text_input="CREDITS", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
         QUIT_BUTTON = Button(image=None, pos=(640, 550), text_input="QUIT", font=get_font(50), base_color="#d7fcd4", hovering_color="Red")
 
+        # draw menu title var to screen
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
+        # change color when hovered
         for button in [PLAY_BUTTON, HOW_TO_PLAY_BUTTON, CREDITS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
+        # button calls 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # for x button in upper right corner
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    reset_game()  # Reset game state before starting new game
+                    reset_game()  
                     play()
                 if HOW_TO_PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    how_to_play()
+                    how_to_play() 
                 if CREDITS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    credits()
+                    credits() 
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    # same but with exit button rather than x
                     pygame.quit()
                     sys.exit()
 
         pygame.display.update()
 
 def reset_game():
-    """Reset all necessary game variables for a fresh start."""
+    # Reset all game variables for a fresh start.
     global player_pos, maze, player_direction, vision_radius
     maze = generate_complex_maze()
     player_pos = [1, 1]
     player_direction = "right"
-    vision_radius = 20  # Reset vision radius
+    vision_radius = 20  
+
 
 main_menu()
