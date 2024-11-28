@@ -32,8 +32,8 @@ Credits for the assets used in the project:
 (Open source):
 - Font: https://fonts.google.com/specimen/Press+Start+2P
 - Background image link: https://wallpapercave.com/w/wp1898784
--Character image link: https://pin.it/7w4f1vecU
--Background music link: https://youtu.be/tM5d0G0vue0?si=gdyEI0ibrEgo_cmN
--Sound effects (after completing the game) link: https://youtu.be/8SoovMIylmA?si=FTOJnM7F2CGSk18M
+- Character image link: https://pin.it/7w4f1vecU
+- Background music link: https://youtu.be/tM5d0G0vue0?si=gdyEI0ibrEgo_cmN
+- Sound effects (after completing the game) link: https://youtu.be/8SoovMIylmA?si=FTOJnM7F2CGSk18M
 
 
